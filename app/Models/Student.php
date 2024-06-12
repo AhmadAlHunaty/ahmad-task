@@ -36,8 +36,13 @@ class Student extends Model
 
     public function subjects(): BelongsToMany
     {
-        return $this->belongsToMany(Subject::class)->withTimestamps()
+        return $this->belongsToMany(Subject::class)
+            ->withTimestamps()
             ->withPivot(['mark'])
             ->as('subjectMark');
+    }
+    public function messages()
+    {
+        return $this->hasMany(Message::class);
     }
 }

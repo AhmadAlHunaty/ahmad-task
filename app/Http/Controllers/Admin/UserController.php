@@ -5,11 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rules\Password;
+
 
 class UserController extends Controller
 {
     public function delete(User $user)
     {
+        $user = User::findOrFail($user->id);
         $user->delete();
 
         return redirect()->back();
@@ -51,12 +54,12 @@ class UserController extends Controller
             'password'  => [
                 'required',
                 'confirmed',
-                // Password::min(8)
-                //     ->letters()
-                //     ->mixedCase()
-                //     ->numbers()
-                //     ->symbols()
-                //     ->uncompromised()
+                Password::min(8)
+                    ->letters()
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols()
+                    ->uncompromised()
             ],
             'is_active' => [
                 'boolean',

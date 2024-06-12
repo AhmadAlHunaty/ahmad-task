@@ -20,16 +20,15 @@
             </button>
             <x-modal id="create-subject">
                 <x-slot:body>
-                    <x-subjects.create/>
+                    <x-subjects.create />
                 </x-slot:body>
             </x-modal>
-            <button
-                type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#assign-subject"
-            >Assign a Subject to User
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#assign-subject">Assign a
+                Subject to User
             </button>
             <x-modal id="assign-subject">
                 <x-slot:body>
-                    <x-subjects.assign :subjects="$subjects" :students="$students"/>
+                    <x-subjects.assign :subjects="$subjects" :students="$students" />
                 </x-slot:body>
             </x-modal>
 
@@ -37,7 +36,7 @@
             </button>
             <x-modal id="set-mark">
                 <x-slot:body>
-                    <x-subjects.mark :subjects="$subjects" :students="$students"/>
+                    <x-subjects.mark :subjects="$subjects" :students="$students" />
                 </x-slot:body>
             </x-modal>
 
@@ -53,80 +52,173 @@
                     </ul>
                 </div>
             @endif
+            <tr>
+                <th>username</th>
+                <th>email</th>
+                <th>is active</th>
+                <th>Subject</th>
+                <th>Mark</th>
+                <th>Min_Mark</th>
+            </tr>
             @foreach ($users as $user)
-                <tr>
-                    <th>username</th>
-                    <th>email</th>
-                </tr>
+                @if ($user->student && $user->student->subjects->isNotEmpty())
+                    @foreach ($user->student->subjects as $subject)
+                        <tr>
 
-                <tr>
-                    <td>{{ $user->name }}</td>
-                    <td>{{ $user->email }}</td>
-                    <td>
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#edit-{{ $user->id }}">
-                            Edit
-                        </button>
+                            <td>{{ $user->name }}</td>
+                            <td>{{ $user->email }}</td>
+                            <td> <span class={{ $user->is_active ? 'bg-success' : 'bg-danger' }}
+                                    style="font-size: 12px; padding: 6px; border-radius: 24px;">
+                                    {{ $user->is_active ? 'Active' : 'Not active' }} </span></td>
 
-                        <div class="modal fade" id="edit-{{ $user->id }}" tabindex="-1"
-                             aria-labelledby="exampleModalLabel"
-                             aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                    </div>
 
-                                    <x-users.edit :user="$user">
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                                Close
-                                            </button>
-                                            <button type="submit" class="btn btn-primary">Save changes</button>
+                            <td>
+                                {{ $subject->name ?? 'N/A' }}
+                            </td>
+
+
+
+                            <td> {{ $subject->pivot->subjectMark ?? 'N/A' }} </td>
+
+
+
+                            <td>{{ $subject->min_mark ?? 'N/A' }}</td>
+                            <td>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#edit-{{ $user->id }}">
+                                    Edit
+                                </button>
+
+                                <div class="modal fade" id="edit-{{ $user->id }}" tabindex="-1"
+                                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+
+                                            <x-users.edit :user="$user">
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">
+                                                        Close
+                                                    </button>
+                                                    <button type="submit" class="btn btn-primary">Save changes</button>
+                                                </div>
+                                            </x-users.edit>
                                         </div>
-                                    </x-users.edit>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-danger" data-bs-toggle="modal"
-                                data-bs-target="#delete-{{$user->id}}">
-                            Delete
-                        </button>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                    data-bs-target="#delete-{{ $user->id }}">
+                                    Delete
+                                </button>
+                                <div class="modal fade" id="delete-{{ $user->id }}" tabindex="-1"
+                                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Do you want to delete the User?
+                                            </div>
 
-                        <div class="modal fade" id="delete-{{$user->id}}" tabindex="-1"
-                             aria-labelledby="exampleModalLabel"
-                             aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            <div class="modal-footer">
+                                                <form action="{{ url("admin/user/$user->id/delete") }}" method="POST">
+                                                    @csrf
+                                                    @method('delete')
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">
+                                                        Close
+                                                    </button>
+                                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                @else
+                    <tr>
+                        <td>{{ $user->name }}</td>
+                        <td>{{ $user->email }}</td>
+                        <td>
+                            <span class="{{ $user->is_active ? 'bg-success' : 'bg-danger' }}"
+                                style="font-size: 12px; padding: 6px; border-radius: 24px;">
+                                {{ $user->is_active ? 'Active' : 'Not active' }}
+                            </span>
+                        </td>
+                        <td colspan="3">No subjects </td>
+                        <td>
+                            <!-- Edit Button and Modal -->
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#edit-{{ $user->id }}">
+                                Edit
+                            </button>
+                            <div class="modal fade" id="edit-{{ $user->id }}" tabindex="-1"
+                                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Edit User</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        Do you want to delete the User?
-                                    </div>
-
-                                    <div class="modal-footer">
-                                        <form action="{{ url("admin/user/$user->id/delete") }}" method="POST">
-                                            @csrf
-                                            @method('delete')
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                                Close
-                                            </button>
-                                            <button type="submit" class="btn btn-danger">Delete</button>
-                                        </form>
+                                        </div>
+                                        <x-users.edit :user="$user">
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-primary">Save changes</button>
+                                            </div>
+                                        </x-users.edit>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </td>
-                </tr>
+
+                            <!-- Delete Button and Modal -->
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                data-bs-target="#delete-{{ $user->id }}">
+                                Delete
+                            </button>
+                            <div class="modal fade" id="delete-{{ $user->id }}" tabindex="-1"
+                                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Delete User</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Do you want to delete the user?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <form action="{{ url("admin/user/$user->id/delete") }}" method="POST">
+                                                @csrf
+                                                @method('delete')
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                @endif
             @endforeach
+
+
         </table>
     </div>
 @endsection

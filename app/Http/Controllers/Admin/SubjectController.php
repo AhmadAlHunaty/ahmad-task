@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\Models\Student;
+
 
 class SubjectController extends Controller
 {
@@ -45,7 +47,7 @@ class SubjectController extends Controller
             ],
         ]);
 
-        $subject = Subject::find($request->get('subject_id'))->first();
+        $subject = Subject::find($request->get('subject_id')); //first()
         $subject->student()->attach($request->get('student_id'));
 
         return redirect()->back()->with('status', 'success');
@@ -86,9 +88,6 @@ class SubjectController extends Controller
                     $query->where('subject_id', $request->get('subject_id'));
                     $query->where('student_id', $request->get('student_id'));
                 }),
-            ],
-            'mark'       => [
-                'min:'.$subject->min_mark,
             ],
         ]);
 

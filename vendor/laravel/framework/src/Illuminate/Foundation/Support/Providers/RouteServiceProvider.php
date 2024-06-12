@@ -118,7 +118,7 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function setRootControllerNamespace()
     {
-        if (! is_null($this->namespace)) {
+        if (!is_null($this->namespace)) {
             $this->app[UrlGenerator::class]->setRootControllerNamespace($this->namespace);
         }
     }
@@ -140,7 +140,7 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function loadCachedRoutes()
     {
-        if (! is_null(self::$alwaysLoadCachedRoutesUsing)) {
+        if (!is_null(self::$alwaysLoadCachedRoutesUsing)) {
             $this->app->call(self::$alwaysLoadCachedRoutesUsing);
 
             return;
@@ -158,11 +158,11 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function loadRoutes()
     {
-        if (! is_null(self::$alwaysLoadRoutesUsing)) {
+        if (!is_null(self::$alwaysLoadRoutesUsing)) {
             $this->app->call(self::$alwaysLoadRoutesUsing);
         }
 
-        if (! is_null($this->loadRoutesUsing)) {
+        if (!is_null($this->loadRoutesUsing)) {
             $this->app->call($this->loadRoutesUsing);
         } elseif (method_exists($this, 'map')) {
             $this->app->call([$this, 'map']);
@@ -179,7 +179,9 @@ class RouteServiceProvider extends ServiceProvider
     public function __call($method, $parameters)
     {
         return $this->forwardCallTo(
-            $this->app->make(Router::class), $method, $parameters
+            $this->app->make(Router::class),
+            $method,
+            $parameters
         );
     }
 }

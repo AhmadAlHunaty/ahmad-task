@@ -6,6 +6,8 @@ use App\Models\User;
 use App\routes\web;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+//use Password;
+use Illuminate\Validation\Rules\Password;
 
 
 class UserControllers extends Controller
@@ -31,12 +33,12 @@ class UserControllers extends Controller
             'password' => [
                 'required',
                 'confirmed',
-                // Password::min(8)
-                //     ->letters()
-                //     ->mixedCase()
-                //     ->numbers()
-                //     ->symbols()
-                //     ->uncompromised()
+                Password::min(8)
+                    ->letters()
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols()
+                    ->uncompromised()
             ],
         ]);
 
@@ -47,7 +49,7 @@ class UserControllers extends Controller
         ]);
         $user->student()->create();
 
-        return redirect('user/create')->with('status', 'success');
+        return redirect('user/login')->with('status', 'success');
     }
 
     public function create()
@@ -62,7 +64,7 @@ class UserControllers extends Controller
             'password' => 'required',
         ]);
         $credentials = $request->only('email', 'password');
-        if ( ! Auth::attempt($credentials)) {
+        if (!Auth::attempt($credentials)) {
             return redirect()->back()
                 ->with('error', 'Invalid email or password.');
         }
@@ -79,8 +81,10 @@ class UserControllers extends Controller
 
         Auth::logout();
 
-        return redirect()->route('login')->with('error',
-            'Your account is not active. Please contact the administrator.');
+        return redirect()->route('login')->with(
+            'error',
+            'Your account is not active. Please contact the administrator.'
+        );
     }
 
     public function logout()
