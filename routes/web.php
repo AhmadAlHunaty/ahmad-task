@@ -8,6 +8,8 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Admin\Student;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\PusherController;
+use Illuminate\Support\Facades\Broadcast;
+
 
 Route::get('user', [App\Http\Controllers\UserControllers::class, 'index'])
     ->name('home');
@@ -81,7 +83,16 @@ Route::middleware(['auth'])->group(function () {
     // Route::post('/chat/subject', [ChatController::class, 'store'])->name('chat.store');
     Route::post('/chat/subject', [ChatController::class, 'store'])->name('chat.store');
     Route::get('/chat/subject', [ChatController::class, 'index'])->name('chat.index');
-    Route::post('/pusher/auth', [PusherController::class, 'authenticate'])->name('pusher.auth');
+    Route::get('/chat/subject/{subject}', [ChatController::class, 'messages'])->name('chat.messages');
+    Broadcast::channel('chat.{subjectId}', function ($user, $subjectId) {
+        $chat = \App\Models\Chat::find($subjectId);
+
+        if ($chat) {
+            return $user->id === $chat->sender_id || $user->id === $chat->receiver_id;
+        }
+
+        return false;
+    });
 });
-Route::get('/chat/subject/{subject}', [ChatController::class, 'messages'])->name('chat.messages');
+Route::post('/pusher/auth', [PusherController::class, 'authenticate'])->name('pusher.auth');
 Route::get('/students/{subject}', [StudentController::class, 'studentsInSubject'])->name('students_in_subject');

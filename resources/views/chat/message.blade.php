@@ -47,6 +47,7 @@
         @csrf
         <h1>Chat Room {{ $subject->name }}</h1>
 
+
         <div id="chat-box" class="border p-3 mb-3" style="height: 400px; overflow-y: scroll;">
             <ul id="message-list" class="list-unstyled">
                 @foreach ($messages as $message)
@@ -55,10 +56,11 @@
             </ul>
         </div>
 
-        <form id="chat-form" action="{{ route('pusher.auth', $subject->id) }}" method="POST">
+        <form id="chat-form" action="{{ route('chat.store') }}" method="POST">
             @csrf
             <div class="input-group">
                 <input type="text" name="message" class="form-control" placeholder="Type a message..." required>
+                <input type="hidden" name="subject_id" value="{{ $subject->id }}">
                 <button class="btn btn-primary" type="submit">Send</button>
             </div>
         </form>
@@ -74,9 +76,9 @@
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <script>
+        //  import Pusher from 'pusher-js';
         // Enable pusher logging - don't include this in production
         Pusher.logToConsole = true;
-
         var pusher = new Pusher('03d440e0081a131d2a68', {
             cluster: 'ap2',
             forceTLS: true,
@@ -84,33 +86,33 @@
 
         var channel = pusher.subscribe('proud-prize-879');
         channel.bind('MessageSent', function(data) {
-            //alert(JSON.stringify(data));
+            alert(JSON.stringify(data));
             console.log(data);
         });
-        var message = 'Hello, This is my first real time message';
-        $.ajax({
-            type: 'POST',
-            cache: false,
-            dataType: 'json',
-            url: '{{ route('pusher.auth') }}',
-            contentType: false,
-            processData: false,
-            data: {
-                message: message
-            },
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function(result) {
-                if (result.response_code == 1) {
-                    alert("Message has been sent");
-                } else {
-                    alert("Fail to send message");
-                }
-            },
-            error: function() {
-                alert("Something went wrong please try again later");
-            }
-        });
+        //var message = 'Hello, This is my first real time message';
+        // $.ajax({
+        //     type: 'POST',
+        //     cache: false,
+        //     dataType: 'json',
+        //     url: '{{ route('pusher.auth') }}',
+        //     contentType: false,
+        //     processData: false,
+        //     data: {
+        //         message: message
+        //     },
+        //     headers: {
+        //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        //     },
+        //     success: function(result) {
+        //         if (result.response_code == 1) {
+        //             alert("Message has been sent");
+        //         } else {
+        //             alert("Fail to send message");
+        //         }
+        //     },
+        //     error: function() {
+        //         alert("Something went wrong please try again later");
+        //     }
+        // });
     </script>
 @endsection
