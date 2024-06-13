@@ -23,8 +23,9 @@ class MessageSent implements ShouldBroadcast
      */
     public function __construct(Message $message)
     {
-        $this->message = $message;
-        $this->user = $message->student;
+        // $this->message = $message;
+        // $this->user = $message->student;
+        $this->message = $message->load('student.user');
     }
 
     /**
@@ -36,6 +37,7 @@ class MessageSent implements ShouldBroadcast
     {
         //return ['proud-prize-879'];
         return new Channel('chat.' . $this->message->subject_id);
+        //return new Channel('proud-prize-879');
     }
 
     /**

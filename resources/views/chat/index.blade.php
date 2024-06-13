@@ -1,7 +1,7 @@
 @extends('Layout.main')
 
 @section('content')
-    <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.11.1/dist/echo.iife.js"></script>
+    {{-- <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.11.1/dist/echo.iife.js"></script>
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
 
 
@@ -20,7 +20,7 @@
             }
         });
 
-        const channel = pusher.subscribe(`private-chat.${subjectId}`);
+        const channel = pusher.subscribe(`chat.${subjectId}`);
         channel.bind('MessageSent', handleMessage);
 
         function handleMessage(data) {
@@ -36,17 +36,52 @@
             messageList.appendChild(listItem);
         }
     </script>
+ --}}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+    <script>
+        // Enable pusher logging - don't include this in production
+        Pusher.logToConsole = true;
 
+        var pusher = new Pusher('03d440e0081a131d2a68', {
+            cluster: 'ap2',
+            forceTLS: true
+        });
+
+        var channel = pusher.subscribe('proud-prize-879');
+        channel.bind('MessageSent', function(data) {
+            // Extract the message and student data from the event
+            var message = data.message.message;
+            var studentName = data.message.student.user.name;
+
+            // Update the content of the <p> tag with the new message
+            var latestMessage = '<strong>' + studentName + ':</strong> ' + message;
+            $('#latest-message').html(latestMessage);
+
+            // Optionally scroll to the bottom of the chat box
+            var chatBox = $('#chat-box');
+            chatBox.scrollTop(chatBox[0].scrollHeight);
+        });
+    </script>
 
     <h1>Welcome, {{ auth()->user()->name }}</h1>
     <div class="container">
         <div class="container">
             <h1>Students in Subject: {{ $subject->name }} </h1>
-            @foreach ($students as $student)
+            {{-- @foreach ($students as $student)
                 <li>
                     {{ $student->user->name }} - <a href="{{ route('chat.index') }}">Chat Room </a>
                 </li>
+            @endforeach --}}
+            @foreach ($students as $student)
+                <li>
+                    {{ $student->user->name }} - <a
+                        href="{{ route('chat.index', ['subject' => $subject->id, 'student' => $student->id]) }}">Chat Room
+                    </a>
+                </li>
             @endforeach
+
+
         </div>
 
         {{-- <h2>Your Subjects</h2>
