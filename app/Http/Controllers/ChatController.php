@@ -4,16 +4,35 @@ namespace App\Http\Controllers;
 
 use App\Models\Message;
 use App\Models\Subject;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use App\Events\MessageSent;
 use Termwind\Components\Dd;
 
 class ChatController extends Controller
 {
-    public function index(Subject $subject)
+    public function index(Request $request)
     {
-        $messages = Message::where('subject_id', $subject)->with('student')->latest()->get();
-        return view('chat.message', compact('subject', 'messages'));
+        $request->validate([
+            'student' => [
+                'required',
+                'exists:App\Models\Student,id',
+            ],
+            'subject' => [
+                'required',
+                'exists:App\Models\Subject,id',
+            ],
+        ]);
+
+        $subject = Subject::find($request->get('subject'));
+        $student = Student::find($request->get('student'));
+        $messages = Message::where('subject_id', $subject)->with('student')
+            ->latest()->get();
+
+        return view(
+            'chat.message',
+            ['subject' => $subject, 'messages' => $messages, 'student' => $student]
+        );
     }
     public function messages(Subject $subject)
     {
